@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Date Verification</title>
+<style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+        background: linear-gradient(135deg, #ffb6c1, #ff69b4, #ff1493);
+        background-size: 400% 400%;
+        animation: gradientShift 20s ease infinite;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+    }
+
+    @keyframes gradientShift {
+        0% {background-position:0% 50%;}
+        50% {background-position:100% 50%;}
+        100% {background-position:0% 50%;}
+    }
+
+    /* Glowing butterflies */
+    .butterfly {
+        position: absolute;
+        font-size: 24px;
+        animation: fly 12s infinite ease-in-out;
+        z-index: 1;
+        pointer-events: none;
+        color: #ffb6c1;
+        text-shadow:
+            0 0 5px #fff,
+            0 0 10px #ff69b4,
+            0 0 15px #ff1493,
+            0 0 20px #ff69b4;
+        opacity: 0;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    @keyframes fly {
+        0% { transform: translateX(-100px) translateY(0) rotate(0deg) scale(0.5); opacity:0; }
+        10% { opacity:1; transform: translateX(0) translateY(-10px) rotate(45deg) scale(1); }
+        50% { transform: translateX(50vw) translateY(20vh) rotate(180deg) scale(1); }
+        90% { opacity:1; transform: translateX(80vw) translateY(40vh) rotate(315deg) scale(0.8); }
+        100% { transform: translateX(100vw) translateY(50vh) rotate(360deg) scale(0.5); opacity:0; }
+    }
+
+    .container {
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.3);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        width: 100%;
+        max-width: 400px;
+        padding: 40px;
+        text-align: center;
+        animation: fadeInUp 1s ease-out;
+        z-index: 10;
+        transition: all 0.3s ease;
+    }
+
+    @keyframes fadeInUp { from {opacity:0; transform: translateY(50px);} to {opacity:1; transform: translateY(0);} }
+
+    h1 { 
+        color: #fff; 
+        margin-bottom: 30px; 
+        font-size: 26px; 
+        font-weight: 700; 
+        text-shadow: 0 0 10px rgba(255,20,147,0.7); 
+        animation: fadeInText 1s ease forwards;
+    }
+
+    @keyframes fadeInText { from {opacity:0; transform: translateY(-20px);} to {opacity:1; transform: translateY(0);} }
+
+    .form-group { margin-bottom:25px; text-align:left; }
+
+    label { display:block; margin-bottom:8px; font-weight:500; color:#fff; }
+
+    select {
+        width: 32%;
+        padding: 10px;
+        font-size:16px;
+        border-radius:12px;
+        border: 1px solid rgba(255,255,255,0.5);
+        background: rgba(255,255,255,0.25);
+        color: #fff;
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        appearance: none;
+        cursor: pointer;
+        margin-right: 2%;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    select:last-child { margin-right:0; }
+    select:hover { background: rgba(255,255,255,0.35); }
+
+    button {
+        width: 100%;
+        margin-top: 20px;
+        background: rgba(255,105,180,0.3);
+        color: #fff;
+        border: 1px solid rgba(255,105,180,0.6);
+        padding: 12px 0;
+        font-size:16px;
+        font-weight:600;
+        border-radius:15px;
+        cursor:pointer;
+        transition: all 0.4s ease;
+        backdrop-filter: blur(5px);
+    }
+    button:hover { 
+        background: rgba(255,105,180,0.5); 
+        box-shadow: 0 8px 20px rgba(255,105,180,0.5); 
+        transform: scale(1.05); 
+    }
+
+    #result { 
+        margin-top:20px; 
+        font-size:16px; 
+        min-height:24px; 
+        padding:12px; 
+        border-radius:10px; 
+        display:none; 
+        color:#fff; 
+        animation: shake 0.8s ease forwards;
+    }
+
+    .error { 
+        background-color: rgba(255,99,71,0.5);
+        animation: shake 0.8s ease forwards, fadeIn 0.5s ease forwards;
+    }
+
+    @keyframes shake {
+        0% { transform: translateX(0); }
+        20% { transform: translateX(-10px); }
+        40% { transform: translateX(10px); }
+        60% { transform: translateX(-8px); }
+        80% { transform: translateX(8px); }
+        100% { transform: translateX(0); }
+    }
+
+    @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+
+    .next-option {
+        margin-top:20px;
+        display:none;
+        padding:20px;
+        border-radius:15px;
+        border:1px solid rgba(255,255,255,0.4);
+        background: rgba(255,255,255,0.2);
+        backdrop-filter: blur(10px);
+        animation: fadeInUp 0.8s ease forwards;
+    }
+    .next-option h2 { color:#fff; margin-bottom:10px; animation: fadeInText 1s ease forwards; }
+    .next-option p { color:#fff; margin-bottom:15px; }
+
+    /* Pink Proceed button */
+    .next-option button {
+        margin-top:10px;
+        width: 100%;
+        background: rgba(255,105,180,0.6); /* Pink */
+        color: #fff;
+        border: 1px solid rgba(255,20,147,0.8);
+        padding: 12px 0;
+        font-size:16px;
+        font-weight:600;
+        border-radius:15px;
+        cursor:pointer;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(5px);
+    }
+    .next-option button:hover {
+        background: rgba(255,20,147,0.8);
+        box-shadow: 0 8px 20px rgba(255,105,180,0.5);
+        transform: scale(1.05);
+    }
+
+    @media(max-width:480px){
+        .container { padding:30px 20px; }
+        h1 { font-size:22px; }
+        select { width:30%; margin-right: 3%; }
+        .butterfly { font-size:18px; }
+    }
+</style>
+</head>
+<body>
+
+<!-- Butterflies -->
+<script>
+const numButterflies = 25;
+for(let i=0;i<numButterflies;i++){
+    const b = document.createElement('div');
+    b.className = 'butterfly';
+    b.textContent = '🦋';
+    b.style.top = Math.random()*80 + 'vh';
+    b.style.left = Math.random()*100 + 'vw';
+    b.style.fontSize = (18 + Math.random()*20) + 'px';
+    b.style.animationDelay = (Math.random()*6) + 's';
+    document.body.appendChild(b);
+}
+</script>
+
+<div class="container">
+    <h1>Date Verification 💗</h1>
+    <form id="dobForm">
+        <div class="form-group">
+            <label>Enter Your Date of Birth:</label>
+            <select id="day" required></select>
+            <select id="month" required></select>
+            <select id="year" required></select>
+        </div>
+        <button type="submit">Verify</button>
+    </form>
+
+    <div id="result"></div>
+
+    <div id="nextOption" class="next-option">
+        <h2>Verification Successful 🦋</h2>
+        <p>Your date of birth is confirmed. You can now proceed to the next step.</p>
+        <button onclick="proceedNext()">Proceed</button>
+    </div>
+</div>
+
+<script>
+// Populate dropdowns
+const daySelect = document.getElementById('day');
+const monthSelect = document.getElementById('month');
+const yearSelect = document.getElementById('year');
+
+for(let d=1; d<=31; d++){ 
+    const opt = document.createElement('option'); 
+    opt.value = d<10?'0'+d:d; 
+    opt.text = d; 
+    daySelect.add(opt); 
+}
+
+const monthNames = ["01","02","03","04","05","06","07","08","09","10","11","12"];
+monthNames.forEach((m)=>{
+    const opt = document.createElement('option');
+    opt.value = m;
+    opt.text = m;
+    monthSelect.add(opt);
+});
+
+for(let y=2000; y<=2023; y++){ 
+    const opt = document.createElement('option'); 
+    opt.value = y; 
+    opt.text = y; 
+    yearSelect.add(opt); 
+}
+
+// Verification
+const form = document.getElementById('dobForm');
+const result = document.getElementById('result');
+const nextOption = document.getElementById('nextOption');
+
+function verifyDOB(e){
+    e.preventDefault();
+    const dob = `${yearSelect.value}-${monthSelect.value}-${daySelect.value}`;
+    if(dob === "2007-11-01"){
+        nextOption.style.display = 'block'; // Show next option
+        result.style.display = 'none'; // Hide message
+    } else {
+        nextOption.style.display = 'none'; // Hide next option
+        result.textContent = 'Sorry, this date is not eligible.';
+        result.className = 'error';
+        result.style.display = 'block';
+        result.offsetWidth; // Reflow to restart animation
+        result.style.animation = 'shake 0.8s ease forwards, fadeIn 0.5s ease forwards';
+    }
+}
+
+// Proceed
+function proceedNext(){
+    window.location.href = "index (1).html";
+}
+
+form.addEventListener('submit', verifyDOB);
+</script>
+
+</body>
+</html>
